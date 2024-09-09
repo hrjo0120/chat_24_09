@@ -1,12 +1,12 @@
 <div class="chat">
-    <form action="" onsubmit="Chat__submitWriteMessageForm(this); return false;">
+    <form action="" onSubmit="Chat__submitWriteMessageForm(this); return false;">
         <input name="authorName" type="text" placeholder="작성자">
         <input name="content" type="text" placeholder="내용">
         <input type="submit" value="작성">
     </form>
 
-    <div class="chat_messagebox">
-        <ul class="chat_message-ul">
+    <div class="chat__messagebox">
+        <ul class="chat__message-ul">
 
         </ul>
     </div>
@@ -46,7 +46,6 @@
 
     // 채팅 메시지 작성 폼
     function Chat__submitWriteMessageForm(form) {
-        // console.log("Chat__submitWriteMessageForm 실행됨");
         form.authorName.value = form.authorName.value.trim();
 
         if (form.authorName.value.length == 0) {
@@ -73,6 +72,9 @@
 
         // POST http://localhost:8080/chat/writeMessage
     }
+
+    // 채팅 작성 폼 끝
+
 
     // 채팅 메세지 읽기 (read)
     // 클라이언트가 받은 메세지의 번호를 입력해야함
@@ -110,8 +112,18 @@
                 );
         });
         // Chat__loadMore(); 즉시실행
-        setTimeout(Chat__loadMore, 500); // 0.5초 뒤에 실행
+        // setTimeout(Chat__loadMore, 500); // 0.5초 뒤에 실행 -> 무분별한 호출 야기
     }
+
+    // sse 접속이야 라고 알려주는 것
+    // sse로 처리할거야 선언한것
+    const sse = new EventSource("/sse/connect");
+
+    // 메세지가 작성됐다는 이벤트가 감지됐을때..
+    // 안쪽에 있는 함수를 실행하겠다
+    sse.addEventListener('chat__messageAdded', e => {
+        Chat__loadMore();
+    });
 
     // 최초에 한번 불러오기
     Chat__loadMore();
